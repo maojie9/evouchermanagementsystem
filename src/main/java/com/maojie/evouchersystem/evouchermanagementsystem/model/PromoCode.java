@@ -5,35 +5,40 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Entity
 @Data
-public class Owner implements Serializable{
-
+public class PromoCode implements Serializable{
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
-
+    
     @Column(unique=true)
-    private String userName;
+    private String PromoCode; // PromoCode
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
+    @ManyToOne
+    @JoinColumn(name = "customerId") // This is the foreign key column
+    private Customer customer; // Customer that own this promo code 
+
+    @ManyToOne
+    @JoinColumn(name = "voucherListId") // This is the foreign key column
+    private VoucherList voucherList; // Customer that own this voucher
 
     @JsonIgnore
     private int status;
 
-    @OneToMany(mappedBy = "owner")
-    private List<VoucherList> voucherList;
+    @OneToMany(mappedBy = "promoCode")
+    private List<Voucher> vouchers;
 
 
 }

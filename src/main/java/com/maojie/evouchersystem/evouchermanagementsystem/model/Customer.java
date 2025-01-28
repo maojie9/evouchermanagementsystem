@@ -1,6 +1,7 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Entity
@@ -29,6 +31,9 @@ public class Customer implements Serializable{
 
     @JsonIgnore
     private int status;
+    
+    @OneToMany(mappedBy = "customer")
+    private List<PromoCode> promoCodes;
 
     
 
