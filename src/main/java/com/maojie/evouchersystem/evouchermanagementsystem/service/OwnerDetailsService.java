@@ -25,7 +25,7 @@ public class OwnerDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Owner owner = ownerRepository.findByUserName(username);
 
-        if(owner == null || DBStatus.valueOfStatusCode(owner.getStatus()) == DBStatus.ACTIVE) {
+        if(owner == null || DBStatus.valueOfStatusCode(owner.getStatus()) != DBStatus.ACTIVE) {
             throw new UsernameNotFoundException(username);
         }
 

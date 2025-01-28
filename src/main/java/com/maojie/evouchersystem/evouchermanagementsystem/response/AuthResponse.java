@@ -6,7 +6,7 @@ import lombok.Data;
 public class AuthResponse {
 
     private String jwt;
-    private boolean status;
+    private boolean status; // This stated is not related to the database status
     private String message;
     private String session;
 
