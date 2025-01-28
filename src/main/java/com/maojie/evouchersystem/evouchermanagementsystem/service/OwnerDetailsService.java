@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.OwnerRepository;
 
@@ -24,7 +25,7 @@ public class OwnerDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Owner owner = ownerRepository.findByUserName(username);
 
-        if(owner == null) {
+        if(owner == null || DBStatus.valueOfStatusCode(owner.getStatus()) == DBStatus.ACTIVE) {
             throw new UsernameNotFoundException(username);
         }
 

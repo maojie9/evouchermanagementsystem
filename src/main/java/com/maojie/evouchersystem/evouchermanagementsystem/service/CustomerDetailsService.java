@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.CustomerRepository;
 
@@ -24,7 +25,7 @@ public class CustomerDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String mobileNoString) throws UsernameNotFoundException {
         Customer customer = customerRepository.findByMobileNoString(mobileNoString);
 
-        if(customer == null) {
+        if(customer == null || DBStatus.valueOfStatusCode(customer.getStatus()) == DBStatus.ACTIVE) {
             throw new UsernameNotFoundException(mobileNoString);
         }
 

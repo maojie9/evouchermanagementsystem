@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.config.JwtProvider;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.domain.UserType;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
@@ -50,8 +51,8 @@ public class AuthController {
 
         newCustomer.setMobileNoString(customer.getMobileNoString());
         newCustomer.setPassword(customer.getPassword());
+        newCustomer.setStatus(DBStatus.ACTIVE.statusCode);
 
-        //Customer savedCustomer = customerRepository.save(newCustomer);
         customerRepository.save(newCustomer);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(customer.getMobileNoString(), customer.getPassword());
@@ -79,8 +80,8 @@ public class AuthController {
 
         newOwner.setUserName(owner.getUserName());
         newOwner.setPassword(owner.getPassword());
+        newOwner.setStatus(DBStatus.ACTIVE.statusCode);
 
-        //Owner savedOwner = ownerRepository.save(newOwner);
         ownerRepository.save(newOwner);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(owner.getUserName(), owner.getPassword());

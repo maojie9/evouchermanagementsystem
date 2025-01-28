@@ -3,6 +3,7 @@ package com.maojie.evouchersystem.evouchermanagementsystem.model;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -25,6 +26,9 @@ public class Customer implements Serializable{
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
+    @JsonIgnore
+    private int status;
 
     
 

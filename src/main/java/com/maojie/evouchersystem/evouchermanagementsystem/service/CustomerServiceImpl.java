@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.config.JwtProvider;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.CustomerRepository;
 
@@ -21,7 +22,7 @@ public class CustomerServiceImpl implements CustomerService{
         String mobileNoString = JwtProvider.getMobielNoStringFromToken(jwt);
         Customer customer = customerRepository.findByMobileNoString(mobileNoString);
 
-        if(customer == null) {
+        if(customer == null || DBStatus.valueOfStatusCode(customer.getStatus()) == DBStatus.ACTIVE) {
             throw new Exception("Customer not found");
         }
 
@@ -31,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public Customer findCustomerById(UUID id) throws Exception {
         Optional<Customer> customer = customerRepository.findById(id);
-        if(customer.isEmpty()){
+        if(customer.isEmpty() || DBStatus.valueOfStatusCode(customer.get().getStatus()) == DBStatus.ACTIVE){
             throw new Exception("Customer not found");
         }
         return customer.get();

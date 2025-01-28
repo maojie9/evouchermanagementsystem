@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.config.JwtProvider;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.OwnerRepository;
 
@@ -21,7 +22,7 @@ public class OwnerServiceImpl implements OwnerService{
         String userName = JwtProvider.getUserNameFromToken(jwt);
         Owner owner = ownerRepository.findByUserName(userName);
 
-        if(owner == null) {
+        if(owner == null || DBStatus.valueOfStatusCode(owner.getStatus()) == DBStatus.ACTIVE) {
             throw new Exception("Username not found");
         }
 
@@ -32,7 +33,7 @@ public class OwnerServiceImpl implements OwnerService{
     @Override
     public Owner findOwnerByID(UUID id) throws Exception {
          Optional<Owner> owner = ownerRepository.findById(id);
-        if(owner.isEmpty()){
+        if(owner.isEmpty() || DBStatus.valueOfStatusCode(owner.get().getStatus()) == DBStatus.ACTIVE){
             throw new Exception("Username not found");
         }
         return owner.get();
