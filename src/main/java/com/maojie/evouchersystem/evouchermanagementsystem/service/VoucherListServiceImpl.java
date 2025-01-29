@@ -96,5 +96,10 @@ public class VoucherListServiceImpl implements VoucherListService{
 
     }
 
+    @Override
+    public List<VoucherList> retrieveActiveVoucherListForCustomer() {
+        return voucherListRepository.findByStatus(DBStatus.ACTIVE.statusCode);
+    }
+
 
 }

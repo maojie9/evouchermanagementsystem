@@ -13,5 +13,5 @@ public interface VoucherListRepository extends JpaRepository<VoucherList, UUID> 
 
     List<VoucherList> findByOwner(Owner owner);
     List<VoucherList> findByVoucherTitle(String voucherTitle);
-
+    List<VoucherList> findByStatus(int status);
 }
