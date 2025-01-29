@@ -1,5 +1,6 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,7 +119,7 @@ public class VoucherListServiceImpl implements VoucherListService{
 
     @Override
     public List<VoucherList> retrieveActiveVoucherListForCustomer() {
-        return voucherListRepository.findByStatus(DBStatus.ACTIVE);
+        return voucherListRepository.findByVoucherExpiryDateAfterAndStatus(new Date(),DBStatus.ACTIVE);
     }
 
 

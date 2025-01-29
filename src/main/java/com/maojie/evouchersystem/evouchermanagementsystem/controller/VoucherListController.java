@@ -55,6 +55,13 @@ public class VoucherListController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
+    @GetMapping("/api/voucherList/retrieveListOfAvailableVoucher")
+    public ResponseEntity<List<VoucherList>> retrieveActiveVoucherList(@RequestHeader("Authorization") String jwt) throws Exception{
+        List<VoucherList> retrieveVoucherLists = voucherListService.retrieveActiveVoucherListForCustomer();
+        return new ResponseEntity<>(retrieveVoucherLists, HttpStatus.OK);
+    }
+
+
 
 
 
