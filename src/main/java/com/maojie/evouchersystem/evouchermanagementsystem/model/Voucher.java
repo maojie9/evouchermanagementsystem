@@ -21,7 +21,7 @@ public class Voucher implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "promoCodeId") // This is the foreign key column
-    private PromoCode promoCode; // Customer that own this promo code 
+    private PromoCode promoCode; // Customer that own this voucher via promo code
 
     private int status;
 

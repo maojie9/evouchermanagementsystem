@@ -8,9 +8,11 @@ import java.util.Map;
  * 
  */
 public enum DBStatus {
-    ACTIVE(1),      // For all tables
-    EXPIRED(2),     // For Voucher which is explecit expired
-    REMOVED(3),     // For Customer and Users delete the account
+    ACTIVE(1),              // For all tables
+    EXPIRED(2),             // For Voucher which is explecit expired
+    REMOVED(3),             // For Customer and Users delete the account
+    DELETEDBYCUSTOMER(4),   // If Customer or owner removed, it will delete the vouchers and promo code too
+    INACTIVE(5),            // Inactive is for voucherList table only
 
 
     ;
