@@ -1,6 +1,7 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.VoucherList;
@@ -14,5 +15,6 @@ public interface VoucherListService {
     VoucherList removeVoucherList(VoucherList voucherList) throws Exception;
 
     List<VoucherList> retrieveActiveVoucherListForCustomer();
+    VoucherList retrieveVoucherById(UUID voucherId);
 
 }

@@ -1,5 +1,6 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,12 @@ public class PromoCodeServiceImpl implements PromoCodeService{
     
     @Autowired
     private PromoCodeRepository promoCodeRepository;
-
     @Autowired
     private VoucherRepository voucherRepository;
 
     @Override
     @Transactional
-    public PromoCode createPromoCode(Customer customer, VoucherList voucherList, PromoCode promoCode) {
+    public PromoCode createPromoCode(Customer customer, VoucherList voucherList, int noOfVoucherIntentToPurchase) {
         // Generate unique Promo code
         while(true) {
             String promoCodeString = generatePromoCode();
@@ -40,21 +40,42 @@ public class PromoCodeServiceImpl implements PromoCodeService{
             newPromoCode.setVoucherList(voucherList);
 
             newPromoCode.setPromoCode(promoCodeString);
-            newPromoCode.setVouchers(promoCode.getVouchers());
             newPromoCode.setStatus(DBStatus.ACTIVE);
 
+            // Obtain number of vouchers are purchased before
+            int numberOfVoucherAlreadyPurchased = 0;
+
+            List<PromoCode> numberOfPromoCodePurchasedByCustomer = promoCodeRepository.findByVoucherListAndCustomer(voucherList, customer);
+            for(PromoCode pc : numberOfPromoCodePurchasedByCustomer) {
+                numberOfVoucherAlreadyPurchased = voucherRepository.findByPromoCode(pc).size() + numberOfVoucherAlreadyPurchased;
+            }
+            if(numberOfVoucherAlreadyPurchased + noOfVoucherIntentToPurchase > voucherList.getVoucherLimitPerCustomer()) {
+                throw new Error("Unable to process the transaction due to number of voucher customer allocated is more than the number of vouchers customer can buy. Money will be refunded");
+            }
+
+            numberOfVoucherAlreadyPurchased = 0;
+            List<PromoCode> numberOfPromoCodePurchased = promoCodeRepository.findByVoucherList(voucherList);
+            for(PromoCode pc : numberOfPromoCodePurchased) {
+                numberOfVoucherAlreadyPurchased = voucherRepository.findByPromoCode(pc).size() + numberOfVoucherAlreadyPurchased;
+            }
+            if(numberOfVoucherAlreadyPurchased + noOfVoucherIntentToPurchase > voucherList.getVoucherQuantity()) {
+                throw new Error("Unable to process the transaction due to vouchers had been sold out. Money will be refunded");
+            }
+
+            // Generate new vouchers 
             PromoCode savedPromoCode = promoCodeRepository.save(newPromoCode);
 
-            for (Voucher voucher : newPromoCode.getVouchers()) {
+            List<Voucher> vouchers = new ArrayList<>();
+            for(int i = 0; i < noOfVoucherIntentToPurchase; i++) {
+                Voucher voucher = new Voucher();
                 voucher.setCurrentCustomer(customer);
                 voucher.setPromoCode(savedPromoCode);
                 voucher.setStatus(DBStatus.ACTIVE);
+                vouchers.add(voucher);
             }
 
-            voucherRepository.saveAll(newPromoCode.getVouchers());
+            voucherRepository.saveAll(vouchers);
             return savedPromoCode;
-
-
         }
     }
 
