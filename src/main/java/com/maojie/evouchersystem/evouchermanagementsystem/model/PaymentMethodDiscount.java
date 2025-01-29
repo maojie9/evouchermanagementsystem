@@ -3,6 +3,8 @@ package com.maojie.evouchersystem.evouchermanagementsystem.model;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +20,7 @@ public class PaymentMethodDiscount  implements Serializable {
     @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "voucherListId") // This is the foreign key column
     private VoucherList voucherList; // Payment method of the particualar list of voucher

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,12 +25,14 @@ public class PromoCode implements Serializable{
     private UUID id;
     
     @Column(unique=true)
-    private String PromoCode; // PromoCode
+    private String promoCode; // PromoCode
 
+    @JsonIncludeProperties({"mobileNoString", "name"})
     @ManyToOne
     @JoinColumn(name = "customerId") // This is the foreign key column
     private Customer customer; // Customer that own this promo code 
-
+    
+    @JsonIncludeProperties({"voucherTitle"})
     @ManyToOne
     @JoinColumn(name = "voucherListId") // This is the foreign key column
     private VoucherList voucherList; // Customer that own this voucher
