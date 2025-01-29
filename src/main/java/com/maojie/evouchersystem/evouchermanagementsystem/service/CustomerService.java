@@ -8,7 +8,7 @@ public interface CustomerService {
     public Customer findCustomerByJwt(String jwt) throws Exception;
     public Customer findCustomerById(UUID id) throws Exception;
 
-    Customer createCustomer(Customer customer);
+    Customer createCustomer(Customer customer) throws Exception;
     Customer updatePassword(Customer customer, String newPassword);
     Customer updateName(Customer customer, String newName);
 

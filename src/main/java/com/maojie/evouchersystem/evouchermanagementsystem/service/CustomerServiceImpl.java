@@ -39,7 +39,12 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public Customer createCustomer(Customer customer) {
+    public Customer createCustomer(Customer customer) throws Exception {
+        Customer isCustomerExist = customerRepository.findByMobileNoString(customer.getMobileNoString());
+        if(isCustomerExist != null) {
+            throw new Exception("This customer is exist, please login instead");
+        }
+
         Customer newCustomer = new Customer();
 
         newCustomer.setMobileNoString(customer.getMobileNoString());

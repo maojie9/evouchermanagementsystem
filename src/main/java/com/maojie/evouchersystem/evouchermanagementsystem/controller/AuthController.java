@@ -17,8 +17,6 @@ import com.maojie.evouchersystem.evouchermanagementsystem.config.JwtProvider;
 import com.maojie.evouchersystem.evouchermanagementsystem.domain.UserType;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
-import com.maojie.evouchersystem.evouchermanagementsystem.repository.CustomerRepository;
-import com.maojie.evouchersystem.evouchermanagementsystem.repository.OwnerRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.response.AuthResponse;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.CustomerDetailsService;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.CustomerService;
@@ -29,11 +27,6 @@ import com.maojie.evouchersystem.evouchermanagementsystem.service.OwnerService;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
-    @Autowired
-    private CustomerRepository customerRepository;
-    @Autowired
-    private OwnerRepository ownerRepository;
 
     @Autowired
     private CustomerDetailsService customerDetailsService;
@@ -48,12 +41,6 @@ public class AuthController {
 
     @PostMapping("/signup/customer")
     public ResponseEntity<AuthResponse> registerCustomer(@RequestBody Customer customer) throws Exception{ 
-        Customer isCustomerExist = customerRepository.findByMobileNoString(customer.getMobileNoString());
-
-        if(isCustomerExist != null) {
-            throw new Exception("This customer is exist, please login instead");
-        }
-
         Customer newCustomer = customerService.createCustomer(customer);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(newCustomer.getMobileNoString(), newCustomer.getPassword());
@@ -71,12 +58,6 @@ public class AuthController {
     
     @PostMapping("/signup/owner")
     public ResponseEntity<AuthResponse> registerOwner(@RequestBody Owner owner) throws Exception{
-        Owner isOwnerExist = ownerRepository.findByUserName(owner.getUserName());
-
-        if(isOwnerExist != null) {
-            throw new Exception("This owner is exist, please login instead");
-        }
-
         Owner newOwner = ownerService.createOwner(owner);
 
         Authentication auth = new UsernamePasswordAuthenticationToken(newOwner.getUserName(), newOwner.getPassword());

@@ -40,7 +40,12 @@ public class OwnerServiceImpl implements OwnerService{
     }
 
     @Override
-    public Owner createOwner(Owner owner) {
+    public Owner createOwner(Owner owner) throws Exception {
+        Owner isOwnerExist = ownerRepository.findByUserName(owner.getUserName());
+        if(isOwnerExist != null) {
+            throw new Exception("This owner is exist, please login instead");
+        }
+
         Owner newOwner = new Owner();
 
         newOwner.setUserName(owner.getUserName());
