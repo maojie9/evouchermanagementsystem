@@ -14,15 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.VoucherList;
-import com.maojie.evouchersystem.evouchermanagementsystem.repository.VoucherListRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.OwnerService;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.VoucherListService;
 
 @RestController
 public class VoucherListController {
-    
-    @Autowired
-    private VoucherListRepository voucherListRepository;
 
     @Autowired
     private OwnerService ownerService;
