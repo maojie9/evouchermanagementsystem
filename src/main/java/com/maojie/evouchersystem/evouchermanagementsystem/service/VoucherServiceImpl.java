@@ -1,5 +1,6 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,9 +28,31 @@ public class VoucherServiceImpl implements VoucherService{
     private VoucherListRepository voucherListRepository;
 
     @Override
-    public List<Voucher> retrieveVoucherListByCurrentCustomer(Customer currentCustomer) {
-        return voucherRepository.findByCurrentCustomer(currentCustomer);
+    public List<Voucher> retrieveVoucherListByCustomer(Customer customer) {
+        // Find the list of promo code first
+        List<PromoCode> promoCodeList = promoCodeRepository.findByCustomer(customer);
+        List<Voucher> vouchers = new ArrayList<>();
+
+        for(PromoCode pc : promoCodeList) {
+            vouchers.addAll(voucherRepository.findByPromoCode(pc));
+        }
+        return vouchers;
+
     }
+
+    @Override
+    public List<Voucher> retrieveGiftedVoucherReceivedByCustomer(Customer customer) {
+        // Find the list of promo code that is not original from the customer
+        List<PromoCode> promoCodeList = promoCodeRepository.findByCustomerNot(customer);
+        List<Voucher> vouchers = new ArrayList<>();
+
+        for(PromoCode pc : promoCodeList) {
+            vouchers.addAll(voucherRepository.findByCurrentCustomerAndPromoCode(customer, pc));
+        }
+        return vouchers;
+
+    }
+
 
     @Override
     public Voucher changeCustomer(Voucher voucher, Customer currentCustomer, Customer newCustomer) throws Exception {
@@ -82,6 +105,5 @@ public class VoucherServiceImpl implements VoucherService{
     public Voucher retrieveVoucherById(UUID voucherId) {
         return voucherRepository.findById(voucherId).get();
     }
-
     
 }

@@ -13,4 +13,6 @@ public interface PromoCodeRepository extends JpaRepository<PromoCode, UUID> {
     List<PromoCode> findByPromoCode(String promoCodeString);
     List<PromoCode> findByVoucherListAndCustomer(VoucherList voucherList, Customer customer);
     List<PromoCode> findByVoucherList(VoucherList voucherList);
+    List<PromoCode> findByCustomer(Customer customer);
+    List<PromoCode> findByCustomerNot(Customer customer);
 }
