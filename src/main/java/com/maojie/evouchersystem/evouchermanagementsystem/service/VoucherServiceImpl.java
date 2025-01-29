@@ -28,7 +28,7 @@ public class VoucherServiceImpl implements VoucherService{
 
     @Override
     public Voucher voucherUsed(Voucher voucher) {
-        voucher.setStatus(DBStatus.USED.statusCode);
+        voucher.setStatus(DBStatus.USED);
         return voucherRepository.save(voucher);
     }
 

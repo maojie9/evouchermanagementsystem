@@ -41,7 +41,7 @@ public class VoucherListServiceImpl implements VoucherListService{
         newVoucherList.setVoucherGiftLimitPerCustomer(voucherList.getVoucherGiftLimitPerCustomer());
 
         newVoucherList.setPaymentMethodDiscounts(voucherList.getPaymentMethodDiscounts());
-        newVoucherList.setStatus(DBStatus.ACTIVE.statusCode);
+        newVoucherList.setStatus(DBStatus.ACTIVE);
 
         VoucherList savedVoucherList = voucherListRepository.save(newVoucherList);
 
@@ -72,7 +72,7 @@ public class VoucherListServiceImpl implements VoucherListService{
         newVoucherList.setVoucherGiftLimitPerCustomer(voucherList.getVoucherGiftLimitPerCustomer());
 
         newVoucherList.setPaymentMethodDiscounts(voucherList.getPaymentMethodDiscounts());
-        newVoucherList.setStatus(DBStatus.ACTIVE.statusCode);
+        newVoucherList.setStatus(DBStatus.ACTIVE);
 
         VoucherList savedVoucherList = voucherListRepository.save(newVoucherList);
 
@@ -91,14 +91,14 @@ public class VoucherListServiceImpl implements VoucherListService{
 
     @Override
     public VoucherList removeVoucherList(VoucherList voucherList) {
-        voucherList.setStatus(DBStatus.INACTIVE.statusCode);
+        voucherList.setStatus(DBStatus.INACTIVE);
         return voucherListRepository.save(voucherList);
 
     }
 
     @Override
     public List<VoucherList> retrieveActiveVoucherListForCustomer() {
-        return voucherListRepository.findByStatus(DBStatus.ACTIVE.statusCode);
+        return voucherListRepository.findByStatus(DBStatus.ACTIVE);
     }
 
 

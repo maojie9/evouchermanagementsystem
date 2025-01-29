@@ -25,7 +25,7 @@ public class CustomerDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String mobileNoString) throws UsernameNotFoundException {
         Customer customer = customerRepository.findByMobileNoString(mobileNoString);
 
-        if(customer == null || DBStatus.valueOfStatusCode(customer.getStatus()) != DBStatus.ACTIVE) {
+        if(customer == null || customer.getStatus() != DBStatus.ACTIVE) {
             throw new UsernameNotFoundException(mobileNoString);
         }
 

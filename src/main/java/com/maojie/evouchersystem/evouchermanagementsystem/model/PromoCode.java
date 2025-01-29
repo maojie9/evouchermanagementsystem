@@ -6,9 +6,12 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,7 +41,8 @@ public class PromoCode implements Serializable{
     private VoucherList voucherList; // Customer that own this voucher
 
     @JsonIgnore
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private DBStatus status;
 
     @OneToMany(mappedBy = "promoCode")
     private List<Voucher> vouchers;

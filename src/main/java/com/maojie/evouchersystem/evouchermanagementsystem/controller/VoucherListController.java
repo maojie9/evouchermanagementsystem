@@ -54,7 +54,7 @@ public class VoucherListController {
             throw new Exception("This voucher is not exist, please create a new voucher");
         }
 
-        if(isVoucherListExist.get(0).getStatus() != DBStatus.ACTIVE.statusCode) {
+        if(isVoucherListExist.get(0).getStatus() != DBStatus.ACTIVE) {
             throw new Exception("This voucher is no longer available, unable to edit the voucher");
         }
 

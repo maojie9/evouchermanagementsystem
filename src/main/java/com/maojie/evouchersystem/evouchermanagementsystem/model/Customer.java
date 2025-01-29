@@ -6,9 +6,12 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +35,8 @@ public class Customer implements Serializable{
     private String password;
 
     @JsonIgnore
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private DBStatus status;
     
     @OneToMany(mappedBy = "customer")
     private List<PromoCode> promoCodes;

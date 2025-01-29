@@ -22,7 +22,7 @@ public class CustomerServiceImpl implements CustomerService{
         String mobileNoString = JwtProvider.getMobielNoStringFromToken(jwt);
         Customer customer = customerRepository.findByMobileNoString(mobileNoString);
 
-        if(customer == null || DBStatus.valueOfStatusCode(customer.getStatus()) != DBStatus.ACTIVE) {
+        if(customer == null || customer.getStatus() != DBStatus.ACTIVE) {
             throw new Exception("Customer not found");
         }
 
@@ -32,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public Customer findCustomerById(UUID id) throws Exception {
         Optional<Customer> customer = customerRepository.findById(id);
-        if(customer.isEmpty() || DBStatus.valueOfStatusCode(customer.get().getStatus()) != DBStatus.ACTIVE){
+        if(customer.isEmpty() || customer.get().getStatus() != DBStatus.ACTIVE){
             throw new Exception("Customer not found");
         }
         return customer.get();
@@ -50,7 +50,7 @@ public class CustomerServiceImpl implements CustomerService{
         newCustomer.setMobileNoString(customer.getMobileNoString());
         newCustomer.setName(customer.getName());
         newCustomer.setPassword(customer.getPassword());
-        newCustomer.setStatus(DBStatus.ACTIVE.statusCode);
+        newCustomer.setStatus(DBStatus.ACTIVE);
 
         return customerRepository.save(newCustomer);
     }

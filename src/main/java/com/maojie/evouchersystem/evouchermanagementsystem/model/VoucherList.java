@@ -8,9 +8,12 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,7 +54,8 @@ public class VoucherList implements Serializable{
     private int voucherGiftLimitPerCustomer; // How many voucher each customer can give out
 
     @JsonIgnore
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private DBStatus status;
 
     @OneToMany(mappedBy = "voucherList")
     private List<PaymentMethodDiscount> paymentMethodDiscounts;

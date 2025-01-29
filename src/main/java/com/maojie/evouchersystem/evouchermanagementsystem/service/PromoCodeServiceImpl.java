@@ -41,14 +41,14 @@ public class PromoCodeServiceImpl implements PromoCodeService{
 
             newPromoCode.setPromoCode(promoCodeString);
             newPromoCode.setVouchers(promoCode.getVouchers());
-            newPromoCode.setStatus(DBStatus.ACTIVE.statusCode);
+            newPromoCode.setStatus(DBStatus.ACTIVE);
 
             PromoCode savedPromoCode = promoCodeRepository.save(newPromoCode);
 
             for (Voucher voucher : newPromoCode.getVouchers()) {
                 voucher.setCurrentCustomer(customer);
                 voucher.setPromoCode(savedPromoCode);
-                voucher.setStatus(DBStatus.ACTIVE.statusCode);
+                voucher.setStatus(DBStatus.ACTIVE);
             }
 
             voucherRepository.saveAll(newPromoCode.getVouchers());
