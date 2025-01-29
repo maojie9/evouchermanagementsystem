@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
@@ -11,8 +13,6 @@ import com.maojie.evouchersystem.evouchermanagementsystem.model.PaymentMethodDis
 import com.maojie.evouchersystem.evouchermanagementsystem.model.VoucherList;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.PaymentMethodDiscountRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.VoucherListRepository;
-
-import jakarta.transaction.Transactional;
 
 @RestController
 public class VoucherListServiceImpl implements VoucherListService{
