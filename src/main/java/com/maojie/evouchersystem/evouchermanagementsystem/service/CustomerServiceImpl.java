@@ -43,6 +43,7 @@ public class CustomerServiceImpl implements CustomerService{
         Customer newCustomer = new Customer();
 
         newCustomer.setMobileNoString(customer.getMobileNoString());
+        newCustomer.setName(customer.getName());
         newCustomer.setPassword(customer.getPassword());
         newCustomer.setStatus(DBStatus.ACTIVE.statusCode);
 
@@ -52,6 +53,12 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public Customer updatePassword(Customer customer, String newPassword) {
         customer.setPassword(newPassword);
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public Customer updateName(Customer customer, String newName) {
+        customer.setName(newName);
         return customerRepository.save(customer);
     }
 

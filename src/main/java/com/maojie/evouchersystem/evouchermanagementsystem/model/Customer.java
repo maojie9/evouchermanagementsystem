@@ -26,6 +26,8 @@ public class Customer implements Serializable{
     @Column(unique=true)
     private String mobileNoString;
 
+    private String name;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

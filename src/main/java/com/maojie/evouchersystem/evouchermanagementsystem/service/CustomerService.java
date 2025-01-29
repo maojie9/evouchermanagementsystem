@@ -10,5 +10,6 @@ public interface CustomerService {
 
     Customer createCustomer(Customer customer);
     Customer updatePassword(Customer customer, String newPassword);
+    Customer updateName(Customer customer, String newName);
 
 }
