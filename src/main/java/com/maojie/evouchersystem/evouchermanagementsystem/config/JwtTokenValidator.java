@@ -1,10 +1,12 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.config;
 
 import java.io.IOException;
+//import java.util.Date;
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,7 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtTokenValidator extends OncePerRequestFilter{
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         String jwt = request.getHeader(JwtConstant.JWT_HEADER);
 
@@ -36,7 +38,12 @@ public class JwtTokenValidator extends OncePerRequestFilter{
                 SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
                 
                 Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
-
+/* 
+                // Make sure the token does not expires
+                if(claims.getExpiration().before(new Date())){
+                    throw new Exception();
+                }
+*/
                 UserType loginType = UserType.valueOf(String.valueOf(claims.get("loginType")));
                 String authorities = String.valueOf(claims.get("authorities"));
                 List<GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList( authorities);
