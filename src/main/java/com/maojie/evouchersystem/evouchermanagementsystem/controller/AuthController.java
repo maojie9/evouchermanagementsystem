@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.config.JwtProvider;
-import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.domain.UserType;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
@@ -22,7 +21,9 @@ import com.maojie.evouchersystem.evouchermanagementsystem.repository.CustomerRep
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.OwnerRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.response.AuthResponse;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.CustomerDetailsService;
+import com.maojie.evouchersystem.evouchermanagementsystem.service.CustomerService;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.OwnerDetailsService;
+import com.maojie.evouchersystem.evouchermanagementsystem.service.OwnerService;
 
 
 @RestController
@@ -39,6 +40,12 @@ public class AuthController {
     @Autowired
     private OwnerDetailsService ownerDetailsService;
 
+    @Autowired
+    private CustomerService customerService;
+
+    @Autowired
+    private OwnerService ownerService;
+
     @PostMapping("/signup/customer")
     public ResponseEntity<AuthResponse> registerCustomer(@RequestBody Customer customer) throws Exception{ 
         Customer isCustomerExist = customerRepository.findByMobileNoString(customer.getMobileNoString());
@@ -46,16 +53,10 @@ public class AuthController {
         if(isCustomerExist != null) {
             throw new Exception("This customer is exist, please login instead");
         }
-        
-        Customer newCustomer = new Customer();
 
-        newCustomer.setMobileNoString(customer.getMobileNoString());
-        newCustomer.setPassword(customer.getPassword());
-        newCustomer.setStatus(DBStatus.ACTIVE.statusCode);
+        Customer newCustomer = customerService.createCustomer(customer);
 
-        customerRepository.save(newCustomer);
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(customer.getMobileNoString(), customer.getPassword());
+        Authentication auth = new UsernamePasswordAuthenticationToken(newCustomer.getMobileNoString(), newCustomer.getPassword());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         String jwt = JwtProvider.generateCustomerToken(auth);
@@ -76,15 +77,9 @@ public class AuthController {
             throw new Exception("This owner is exist, please login instead");
         }
 
-        Owner newOwner = new Owner();
+        Owner newOwner = ownerService.createOwner(owner);
 
-        newOwner.setUserName(owner.getUserName());
-        newOwner.setPassword(owner.getPassword());
-        newOwner.setStatus(DBStatus.ACTIVE.statusCode);
-
-        ownerRepository.save(newOwner);
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(owner.getUserName(), owner.getPassword());
+        Authentication auth = new UsernamePasswordAuthenticationToken(newOwner.getUserName(), newOwner.getPassword());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         String jwt = JwtProvider.generateOwnerToken(auth);

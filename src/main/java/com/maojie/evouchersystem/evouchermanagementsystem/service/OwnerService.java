@@ -8,6 +8,7 @@ public interface OwnerService {
     public Owner findOwnerByJwt(String jwt) throws Exception;
     public Owner findOwnerByID(UUID id) throws Exception;
 
+    Owner createOwner(Owner owner);
     Owner updatePassword(Owner customer, String newPassword);
 
 }

@@ -40,6 +40,17 @@ public class OwnerServiceImpl implements OwnerService{
     }
 
     @Override
+    public Owner createOwner(Owner owner) {
+        Owner newOwner = new Owner();
+
+        newOwner.setUserName(owner.getUserName());
+        newOwner.setPassword(owner.getPassword());
+        newOwner.setStatus(DBStatus.ACTIVE.statusCode);
+
+        return ownerRepository.save(newOwner);
+    }
+
+    @Override
     public Owner updatePassword(Owner owner, String newPassword) {
         owner.setPassword(newPassword);
         return ownerRepository.save(owner);
