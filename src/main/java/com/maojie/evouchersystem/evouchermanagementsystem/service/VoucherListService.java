@@ -15,6 +15,6 @@ public interface VoucherListService {
     VoucherList removeVoucherList(VoucherList voucherList) throws Exception;
 
     List<VoucherList> retrieveActiveVoucherListForCustomer();
-    VoucherList retrieveVoucherById(UUID voucherId);
+    VoucherList retrieveVoucherListById(UUID voucherListId);
 
 }

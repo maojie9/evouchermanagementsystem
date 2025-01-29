@@ -12,5 +12,6 @@ import java.util.List;
 
 public interface VoucherRepository extends JpaRepository<Voucher, UUID> {
     List<Voucher> findByCurrentCustomer(Customer currentCustomer);
+    List<Voucher> findByCurrentCustomerNotAndPromoCode(Customer currentCustomer, PromoCode promoCode);
     List<Voucher> findByPromoCode(PromoCode promoCode);
 }

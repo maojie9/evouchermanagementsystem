@@ -39,6 +39,15 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
+    public Customer findCustomerByMobileNumberString(String mobileNoString) throws Exception {
+        Customer customer = customerRepository.findByMobileNoString(mobileNoString);
+        if(customer==null || customer.getStatus() != DBStatus.ACTIVE){
+            throw new Exception("Customer not found");
+        }
+        return customer;
+    }
+
+    @Override
     public Customer createCustomer(Customer customer) throws Exception {
         Customer isCustomerExist = customerRepository.findByMobileNoString(customer.getMobileNoString());
         if(isCustomerExist != null) {

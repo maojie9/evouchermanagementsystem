@@ -124,8 +124,8 @@ public class VoucherListServiceImpl implements VoucherListService{
     }
 
     @Override
-    public VoucherList retrieveVoucherById(UUID voucherId) {
-        return voucherListRepository.findById(voucherId).get();
+    public VoucherList retrieveVoucherListById(UUID voucherListId) {
+        return voucherListRepository.findById(voucherListId).get();
     }
 
 

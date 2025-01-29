@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class AfterPurchaseVoucher implements Serializable {
-    private UUID voucherListId;
-    private int numberOfVoucherPurchased;
+public class TransferVoucher implements Serializable {
+    private UUID voucherId;
+    private String newCustomerBasedOnMobileNoString;
 }
