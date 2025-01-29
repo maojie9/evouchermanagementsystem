@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserController {
 
     @Autowired
-    CustomerService customerService;
+    private CustomerService customerService;
 
     @Autowired
-    OwnerService ownerService;
+    private OwnerService ownerService;
 
     @GetMapping("/api/customers/profile")
     public ResponseEntity<Customer> getCustomerProfile(@RequestHeader("Authorization") String jwt) throws Exception{
