@@ -1,6 +1,7 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,12 @@ public class VoucherListServiceImpl implements VoucherListService{
 
     @Override
     @Transactional
-    public VoucherList createVoucherList(Owner owner, VoucherList voucherList) {
+    public VoucherList createVoucherList(Owner owner, VoucherList voucherList) throws Exception {
+        List<VoucherList> isVoucherListExist = voucherListRepository.findByVoucherTitle(voucherList.getVoucherTitle());
+
+        if(isVoucherListExist != null && isVoucherListExist.size()>0) {
+            throw new Exception("This voucher is exist, please change the title of the voucher");
+        }
 
         VoucherList newVoucherList = new VoucherList();
 
@@ -56,7 +62,15 @@ public class VoucherListServiceImpl implements VoucherListService{
 
     @Override
     @Transactional
-    public VoucherList updateVoucherList(Owner owner, VoucherList voucherList) {
+    public VoucherList updateVoucherList(Owner owner, VoucherList voucherList) throws Exception {
+        List<VoucherList> isVoucherListExist = voucherListRepository.findByVoucherTitle(voucherList.getVoucherTitle());
+        if(isVoucherListExist == null || isVoucherListExist.isEmpty()) {
+            throw new Exception("This voucher is not exist, please create a new voucher");
+        }
+        if(isVoucherListExist.get(0).getStatus() != DBStatus.ACTIVE) {
+            throw new Exception("This voucher is no longer available, unable to edit the voucher");
+        }
+
         VoucherList newVoucherList = new VoucherList();
 
         newVoucherList.setOwner(owner);
@@ -90,7 +104,13 @@ public class VoucherListServiceImpl implements VoucherListService{
     }
 
     @Override
-    public VoucherList removeVoucherList(VoucherList voucherList) {
+    public VoucherList removeVoucherList(VoucherList voucherList) throws Exception {
+         Optional<VoucherList> isVoucherListExist = voucherListRepository.findById(voucherList.getId());
+
+        if(isVoucherListExist == null || isVoucherListExist.isEmpty()) {
+            throw new Exception("This voucher is not exist, unable to remove the voucher");
+        }
+        
         voucherList.setStatus(DBStatus.INACTIVE);
         return voucherListRepository.save(voucherList);
 

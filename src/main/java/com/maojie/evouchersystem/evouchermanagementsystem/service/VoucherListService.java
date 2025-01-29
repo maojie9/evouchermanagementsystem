@@ -7,11 +7,11 @@ import com.maojie.evouchersystem.evouchermanagementsystem.model.VoucherList;
 
 public interface VoucherListService {
 
-    VoucherList createVoucherList(Owner owner, VoucherList voucherList);
-    VoucherList updateVoucherList(Owner owner, VoucherList voucherList);
+    VoucherList createVoucherList(Owner owner, VoucherList voucherList) throws Exception;
+    VoucherList updateVoucherList(Owner owner, VoucherList voucherList) throws Exception;
 
     List<VoucherList> retrieveVoucherListByOwner(Owner owner);
-    VoucherList removeVoucherList(VoucherList voucherList);
+    VoucherList removeVoucherList(VoucherList voucherList) throws Exception;
 
     List<VoucherList> retrieveActiveVoucherListForCustomer();
 
