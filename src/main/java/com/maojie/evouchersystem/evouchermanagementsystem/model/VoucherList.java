@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +42,7 @@ public class VoucherList implements Serializable{
     private double voucherAmount; // What is the value of the voucher
     private int voucherQuantity; // How many voucher are available 
     
+    @JsonIncludeProperties({"id", "userName"})
     @ManyToOne
     @JoinColumn(name = "voucherOwner") // This is the foreign key column
     private Owner owner; // Owner of the voucher ie. Who create the voucher

@@ -90,8 +90,7 @@ public class VoucherListServiceImpl implements VoucherListService{
     }
 
     @Override
-    public VoucherList removeVoucherList(Owner owner, VoucherList voucherList) {
-        voucherList.setOwner(owner);
+    public VoucherList removeVoucherList(VoucherList voucherList) {
         voucherList.setStatus(DBStatus.INACTIVE.statusCode);
         return voucherListRepository.save(voucherList);
 

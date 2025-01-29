@@ -11,6 +11,6 @@ public interface VoucherListService {
     VoucherList updateVoucherList(Owner owner, VoucherList voucherList);
 
     List<VoucherList> retrieveVoucherListByOwner(Owner owner);
-    VoucherList removeVoucherList(Owner owner, VoucherList voucherList);
+    VoucherList removeVoucherList(VoucherList voucherList);
 
 }
