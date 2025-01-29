@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -27,7 +28,11 @@ public class VoucherList implements Serializable{
     
     @Column(unique=true)
     private String voucherTitle; // Title of the voucher
+    
+    @Lob
     private String voucherDesctiption; // Description of the voucher
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date voucherExpiryDate; // Expiry date of the voucher
 
     @Lob
