@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Owner;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.VoucherList;
+import com.maojie.evouchersystem.evouchermanagementsystem.service.CustomerService;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.OwnerService;
 import com.maojie.evouchersystem.evouchermanagementsystem.service.VoucherListService;
 
@@ -24,6 +26,8 @@ public class VoucherListController {
     private OwnerService ownerService;
     @Autowired
     private VoucherListService voucherListService;
+    @Autowired
+    private CustomerService customerService;
 
     // Temporary testing purposes
     @PostMapping("/api/voucherList/createVoucherList")
@@ -58,6 +62,10 @@ public class VoucherListController {
 
     @GetMapping("/api/voucherList/retrieveListOfAvailableVoucher")
     public ResponseEntity<List<VoucherList>> retrieveActiveVoucherList(@RequestHeader("Authorization") String jwt) throws Exception{
+        Customer customer = customerService.findCustomerByJwt(jwt);
+        if(customer == null) {
+            throw new Exception("Only registered customer can access to the eStore");
+        }
         List<VoucherList> retrieveVoucherLists = voucherListService.retrieveActiveVoucherListForCustomer();
         return new ResponseEntity<>(retrieveVoucherLists, HttpStatus.OK);
     }
