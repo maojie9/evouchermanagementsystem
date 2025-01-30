@@ -1,18 +1,25 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.OrderStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
+import com.maojie.evouchersystem.evouchermanagementsystem.model.Sorder;
+import com.maojie.evouchersystem.evouchermanagementsystem.model.PaymentMethodDiscount;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.PromoCode;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Voucher;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.VoucherList;
+import com.maojie.evouchersystem.evouchermanagementsystem.repository.OrderRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.PromoCodeRepository;
+import com.maojie.evouchersystem.evouchermanagementsystem.repository.VoucherListRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.VoucherRepository;
 
 @RestController
@@ -22,10 +29,14 @@ public class PromoCodeServiceImpl implements PromoCodeService{
     private PromoCodeRepository promoCodeRepository;
     @Autowired
     private VoucherRepository voucherRepository;
-
+    @Autowired
+    private VoucherListRepository voucherListRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    
     @Override
     @Transactional
-    public PromoCode createPromoCode(Customer customer, VoucherList voucherList, int noOfVoucherIntentToPurchase) {
+    public Boolean createPromoCode(Customer customer, Sorder order) {
         // Generate unique Promo code
         while(true) {
             String promoCodeString = generatePromoCode();
@@ -36,37 +47,60 @@ public class PromoCodeServiceImpl implements PromoCodeService{
             }
 
             PromoCode newPromoCode = new PromoCode();
-            newPromoCode.setCustomer(customer);
-            newPromoCode.setVoucherList(voucherList);
-
+            newPromoCode.setSorder(order);
             newPromoCode.setPromoCode(promoCodeString);
-            newPromoCode.setStatus(DBStatus.ACTIVE);
 
-            // Obtain number of vouchers are purchased before
+            Optional<VoucherList> assignedVoucherList = voucherListRepository.findById(order.getPaymentMethodDiscount().getVoucherList().getId());
+
+            if(assignedVoucherList.isEmpty() || 
+                assignedVoucherList.get().getStatus() != DBStatus.ACTIVE ||
+                assignedVoucherList.get().getVoucherExpiryDate().compareTo(new Date()) < 0) {
+                    order.setReason("Unable to obtain the voucher to process payment");
+                    order.setStatus(OrderStatus.REJECT);
+                    orderRepository.save(order);
+                    return false;
+            }
+
+            // Obtain number of vouchers are purchased before by the customer
+            int numberOfVoucherAlreadyPurchasedByCustomer = 0;
             int numberOfVoucherAlreadyPurchased = 0;
 
-            List<PromoCode> numberOfPromoCodePurchasedByCustomer = promoCodeRepository.findByVoucherListAndCustomer(voucherList, customer);
-            for(PromoCode pc : numberOfPromoCodePurchasedByCustomer) {
-                numberOfVoucherAlreadyPurchased = voucherRepository.findByPromoCode(pc).size() + numberOfVoucherAlreadyPurchased;
-            }
-            if(numberOfVoucherAlreadyPurchased + noOfVoucherIntentToPurchase > voucherList.getVoucherLimitPerCustomer()) {
-                throw new Error("Unable to process the transaction due to number of voucher customer allocated is more than the number of vouchers customer can buy. Money will be refunded");
+            List<PaymentMethodDiscount> paymentMethodDiscounts = assignedVoucherList.get().getPaymentMethodDiscounts();
+
+            for(PaymentMethodDiscount pmd : paymentMethodDiscounts) {
+                List <Sorder> numberOfOrdersPurchasedByCustomer = orderRepository.findByPaymentMethodDiscountAndStatusAndCustomer(pmd, OrderStatus.ACCEPTED, customer);
+                for(Sorder o : numberOfOrdersPurchasedByCustomer) {
+                    numberOfVoucherAlreadyPurchasedByCustomer = numberOfVoucherAlreadyPurchasedByCustomer + o.getNoOfVoucher();
+                }
+                
+                List <Sorder> numberOfOrdersPurchased = orderRepository.findByPaymentMethodDiscountAndStatus(pmd, OrderStatus.ACCEPTED);
+                for(Sorder o : numberOfOrdersPurchased) {
+                    numberOfVoucherAlreadyPurchased = numberOfVoucherAlreadyPurchased + o.getNoOfVoucher();
+                }
             }
 
-            numberOfVoucherAlreadyPurchased = 0;
-            List<PromoCode> numberOfPromoCodePurchased = promoCodeRepository.findByVoucherList(voucherList);
-            for(PromoCode pc : numberOfPromoCodePurchased) {
-                numberOfVoucherAlreadyPurchased = voucherRepository.findByPromoCode(pc).size() + numberOfVoucherAlreadyPurchased;
+            if(numberOfVoucherAlreadyPurchasedByCustomer + order.getNoOfVoucher() > assignedVoucherList.get().getVoucherLimitPerCustomer()) {
+                order.setReason("Unable to process the transaction due to number of voucher customer allocated is more than the number of vouchers customer can buy.");
+                order.setStatus(OrderStatus.REJECT);
+                orderRepository.save(order);
+                return false;
             }
-            if(numberOfVoucherAlreadyPurchased + noOfVoucherIntentToPurchase > voucherList.getVoucherQuantity()) {
-                throw new Error("Unable to process the transaction due to vouchers had been sold out. Money will be refunded");
+
+            // Obtaim the total number of voucher purchased
+            if(numberOfVoucherAlreadyPurchased + order.getNoOfVoucher() > assignedVoucherList.get().getVoucherQuantity()) {
+                order.setReason("Unable to process the transaction due to vouchers had been sold out. Money will be refunded");
+                order.setStatus(OrderStatus.REJECT);
+                orderRepository.save(order);
+                return false;
             }
 
             // Generate new vouchers 
+            order.setStatus(OrderStatus.ACCEPTED);
+            orderRepository.save(order);
             PromoCode savedPromoCode = promoCodeRepository.save(newPromoCode);
 
             List<Voucher> vouchers = new ArrayList<>();
-            for(int i = 0; i < noOfVoucherIntentToPurchase; i++) {
+            for(int i = 0; i < order.getNoOfVoucher(); i++) {
                 Voucher voucher = new Voucher();
                 voucher.setCurrentCustomer(customer);
                 voucher.setPromoCode(savedPromoCode);
@@ -75,7 +109,7 @@ public class PromoCodeServiceImpl implements PromoCodeService{
             }
 
             voucherRepository.saveAll(vouchers);
-            return savedPromoCode;
+            return true;
         }
     }
 

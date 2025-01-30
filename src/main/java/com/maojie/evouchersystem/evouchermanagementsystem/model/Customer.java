@@ -39,7 +39,7 @@ public class Customer implements Serializable{
     private DBStatus status;
     
     @OneToMany(mappedBy = "customer")
-    private List<PromoCode> promoCodes;
+    private List<Sorder> sorders;
 
     
 

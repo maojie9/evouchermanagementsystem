@@ -11,7 +11,7 @@ public interface VoucherService {
     List<Voucher> retrieveGiftedVoucherReceivedByCustomer(Customer customer);
 
     Voucher changeCustomer(Voucher voucher, Customer currentCustomer, Customer newCustomer) throws Exception;
-    Voucher voucherUsed(Voucher voucher) throws Exception;
-    Voucher retrieveVoucherById(UUID voucherId);
+    Voucher voucherUsed(Customer customer, Voucher voucher) throws Exception;
+    Voucher retrieveVoucherById(UUID voucherId) throws Exception;
 
 }

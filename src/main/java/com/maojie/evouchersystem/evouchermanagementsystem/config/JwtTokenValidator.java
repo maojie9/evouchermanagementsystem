@@ -57,7 +57,7 @@ public class JwtTokenValidator extends OncePerRequestFilter{
                     userName = String.valueOf(claims.get("mobileNoString"));
                     break;
                     default:
-                        throw new Error();
+                        throw new Exception();
                 }
 
                 Authentication auth = new UsernamePasswordAuthenticationToken(userName, null, authorityList);

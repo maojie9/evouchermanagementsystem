@@ -129,8 +129,8 @@ public class VoucherListServiceImpl implements VoucherListService{
     }
 
     @Override
-    public VoucherList retrieveVoucherListById(UUID voucherListId) {
-        return voucherListRepository.findById(voucherListId).get();
+    public VoucherList retrieveVoucherListById(UUID voucherListId) throws Exception {
+        return voucherListRepository.findById(voucherListId).orElseThrow(() -> new Exception("Unable to fund the specific voucher"));
     }
 
 

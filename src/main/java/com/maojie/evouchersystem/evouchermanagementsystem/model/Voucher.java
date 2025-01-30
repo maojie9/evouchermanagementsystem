@@ -29,7 +29,7 @@ public class Voucher implements Serializable{
     @JoinColumn(name = "currentCustomerId") // This is the foreign key column
     private Customer currentCustomer; // Which customer hold the posession for the voucher
 
-    @JsonIncludeProperties({"promoCode", "customer"})
+    @JsonIncludeProperties({"promoCode", "order"})
     @ManyToOne
     @JoinColumn(name = "promoCodeId") // This is the foreign key column
     private PromoCode promoCode; // Customer that own this voucher via promo code

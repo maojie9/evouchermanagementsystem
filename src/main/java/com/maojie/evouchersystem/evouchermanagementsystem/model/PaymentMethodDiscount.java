@@ -1,6 +1,7 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,11 +15,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Entity
 @Data
-public class PaymentMethodDiscount  implements Serializable {
+public class PaymentMethodDiscount implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
@@ -31,6 +33,10 @@ public class PaymentMethodDiscount  implements Serializable {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod; // Enum of Payment Method
     private int paymentMethodDiscounts; // In percentage
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "paymentMethodDiscount")
+    private List<Sorder> sorders;
 
 
 }

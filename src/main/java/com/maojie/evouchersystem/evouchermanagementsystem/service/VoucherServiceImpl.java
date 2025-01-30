@@ -1,6 +1,7 @@
 package com.maojie.evouchersystem.evouchermanagementsystem.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,10 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
+import com.maojie.evouchersystem.evouchermanagementsystem.domain.OrderStatus;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Customer;
+import com.maojie.evouchersystem.evouchermanagementsystem.model.Sorder;
+import com.maojie.evouchersystem.evouchermanagementsystem.model.PaymentMethodDiscount;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.PromoCode;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.Voucher;
 import com.maojie.evouchersystem.evouchermanagementsystem.model.VoucherList;
+import com.maojie.evouchersystem.evouchermanagementsystem.repository.OrderRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.PromoCodeRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.VoucherListRepository;
 import com.maojie.evouchersystem.evouchermanagementsystem.repository.VoucherRepository;
@@ -26,15 +31,20 @@ public class VoucherServiceImpl implements VoucherService{
     private PromoCodeRepository promoCodeRepository;
     @Autowired
     private VoucherListRepository voucherListRepository;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
     public List<Voucher> retrieveVoucherListByCustomer(Customer customer) {
-        // Find the list of promo code first
-        List<PromoCode> promoCodeList = promoCodeRepository.findByCustomer(customer);
+        // Find the list of order first
         List<Voucher> vouchers = new ArrayList<>();
+        List<Sorder> orderList = orderRepository.findByCustomer(customer);
 
-        for(PromoCode pc : promoCodeList) {
-            vouchers.addAll(voucherRepository.findByPromoCode(pc));
+        for(Sorder o : orderList){
+            List<PromoCode> promoCodes = promoCodeRepository.findBySorder(o);
+            for(PromoCode pc : promoCodes) {
+                vouchers.addAll(voucherRepository.findByPromoCode(pc));
+            }
         }
         return vouchers;
 
@@ -42,17 +52,19 @@ public class VoucherServiceImpl implements VoucherService{
 
     @Override
     public List<Voucher> retrieveGiftedVoucherReceivedByCustomer(Customer customer) {
-        // Find the list of promo code that is not original from the customer
-        List<PromoCode> promoCodeList = promoCodeRepository.findByCustomerNot(customer);
+        // Find the list of order that is not original from the customer
         List<Voucher> vouchers = new ArrayList<>();
+        List<Sorder> orderList = orderRepository.findByCustomerNot(customer);
 
-        for(PromoCode pc : promoCodeList) {
-            vouchers.addAll(voucherRepository.findByCurrentCustomerAndPromoCode(customer, pc));
+        for(Sorder o : orderList){
+            List<PromoCode> promoCodes = promoCodeRepository.findBySorder(o);
+            for(PromoCode pc : promoCodes) {
+                vouchers.addAll(voucherRepository.findByCurrentCustomerAndPromoCode(customer, pc));
+            }
         }
         return vouchers;
 
     }
-
 
     @Override
     public Voucher changeCustomer(Voucher voucher, Customer currentCustomer, Customer newCustomer) throws Exception {
@@ -62,28 +74,36 @@ public class VoucherServiceImpl implements VoucherService{
         }
 
         // Obtain number of vouchers are transferred before
-        PromoCode appointedPromoCode = promoCodeRepository.findById(voucher.getPromoCode().getId()).get();
-        if(appointedPromoCode == null || appointedPromoCode.getStatus() != DBStatus.ACTIVE) {
-            throw new Exception("Unable to transfer the voucher as voucher is unavailable");
-        }
+        Optional<VoucherList> voucherList = voucherListRepository.findById(voucher.getPromoCode().getSorder().getPaymentMethodDiscount().getVoucherList().getId());
+        if(voucherList == null || 
+            voucherList.isEmpty() || 
+            voucherList.get().getStatus() != DBStatus.ACTIVE ||
+            voucherList.get().getVoucherExpiryDate().compareTo(new Date()) < 0) {
+                throw new Exception("Unable to transfer the voucher as voucher is unavailable");
+            }
 
-        Optional<VoucherList> appointedVoucherList = voucherListRepository.findById(appointedPromoCode.getVoucherList().getId());
-        if(appointedVoucherList == null ||  appointedVoucherList.get().getStatus() != DBStatus.ACTIVE) {
-            throw new Exception("Unable to transfer the voucher as voucher is unavailable");
-        }
-        if(appointedVoucherList.get().getVoucherGiftLimitPerCustomer() <=0) {
+        if(voucherList.get().getVoucherGiftLimitPerCustomer() <=0) {
             throw new Exception("Unable to transfer the voucher as voucher is untransferable");
         }
 
-        int numberOfVoucherAlreadyTransfered = 0;
-        
-        List<PromoCode> numberOfPromoCodePurchasedByCurrentCustomer = promoCodeRepository.findByVoucherListAndCustomer(appointedVoucherList.get(), currentCustomer);
-        for(PromoCode pc : numberOfPromoCodePurchasedByCurrentCustomer) {
-            numberOfVoucherAlreadyTransfered = numberOfVoucherAlreadyTransfered + voucherRepository.findByCurrentCustomerNotAndPromoCode(currentCustomer, pc).size();
+
+        // Obtain number of vouchers are transfered before by the customer
+        int numberOfVoucherAlreadyTransferedByCustomer = 0;
+        List<PaymentMethodDiscount> paymentMethodDiscounts = voucherList.get().getPaymentMethodDiscounts();
+
+        for(PaymentMethodDiscount pmd : paymentMethodDiscounts) {
+            List<Sorder> numberOfOrdersPurchasedByCustomer = orderRepository.findByPaymentMethodDiscountAndStatusAndCustomer(pmd, OrderStatus.ACCEPTED, currentCustomer);
+            for(Sorder o : numberOfOrdersPurchasedByCustomer) {
+                List<PromoCode> promoCode = promoCodeRepository.findBySorder(o);
+                if(promoCode!=null && !promoCode.isEmpty()) {
+                    List<Voucher> vouchers = voucherRepository.findByCurrentCustomerNotAndPromoCode(currentCustomer, promoCode.get(0));
+                    numberOfVoucherAlreadyTransferedByCustomer = numberOfVoucherAlreadyTransferedByCustomer + vouchers.size();
+                }
+            }
         }
 
-        if(numberOfVoucherAlreadyTransfered + 1 > appointedVoucherList.get().getVoucherGiftLimitPerCustomer()) {
-            throw new Error("Unable to process the transaction due to customer had use up the number of vouchers to transfer");
+        if(numberOfVoucherAlreadyTransferedByCustomer + 1 > voucherList.get().getVoucherGiftLimitPerCustomer()) {
+            throw new Exception("Unable to process the transaction due to customer had use up the number of vouchers to transfer");
         }
         
         voucher.setCurrentCustomer(newCustomer);
@@ -91,7 +111,16 @@ public class VoucherServiceImpl implements VoucherService{
     }
 
     @Override
-    public Voucher voucherUsed(Voucher voucher) throws Exception {
+    public Voucher voucherUsed(Customer customer, Voucher voucher) throws Exception {
+        // Check the Voucher is it correct customer to use
+        Optional<Voucher> assignVoucher = voucherRepository.findById(voucher.getId());
+        if(assignVoucher.isEmpty()) {
+            throw new Exception("Voucher not found");
+        }
+        if(!assignVoucher.get().getCurrentCustomer().getId().equals(customer.getId())) {
+            throw new Exception("This customer is unauthorized to use this voucher");
+        }
+        
         if(voucher.getStatus() == DBStatus.ACTIVE) {
             voucher.setStatus(DBStatus.USED);
             return voucherRepository.save(voucher);
@@ -102,8 +131,8 @@ public class VoucherServiceImpl implements VoucherService{
     }
 
     @Override
-    public Voucher retrieveVoucherById(UUID voucherId) {
-        return voucherRepository.findById(voucherId).get();
+    public Voucher retrieveVoucherById(UUID voucherId) throws Exception {
+        return voucherRepository.findById(voucherId).orElseThrow(() -> new Exception("Unable to fund the specific voucher"));
     }
     
 }
