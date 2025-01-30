@@ -40,7 +40,7 @@ public class VoucherListServiceImpl implements VoucherListService{
         newVoucherList.setOwner(owner);
 
         newVoucherList.setVoucherTitle(voucherList.getVoucherTitle());
-        newVoucherList.setVoucherDesctiption(voucherList.getVoucherDesctiption());
+        newVoucherList.setVoucherDescription(voucherList.getVoucherDescription());
         newVoucherList.setVoucherExpiryDate(voucherList.getVoucherExpiryDate());
         newVoucherList.setVoucherImage(voucherList.getVoucherImage());
         newVoucherList.setVoucherAmount(voucherList.getVoucherAmount());
@@ -79,7 +79,7 @@ public class VoucherListServiceImpl implements VoucherListService{
         newVoucherList.setId(voucherList.getId());
 
         newVoucherList.setVoucherTitle(voucherList.getVoucherTitle());
-        newVoucherList.setVoucherDesctiption(voucherList.getVoucherDesctiption());
+        newVoucherList.setVoucherDescription(voucherList.getVoucherDescription());
         newVoucherList.setVoucherExpiryDate(voucherList.getVoucherExpiryDate());
         newVoucherList.setVoucherImage(voucherList.getVoucherImage());
         newVoucherList.setVoucherAmount(voucherList.getVoucherAmount());

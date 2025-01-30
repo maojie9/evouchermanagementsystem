@@ -33,7 +33,7 @@ public class VoucherList implements Serializable{
     private String voucherTitle; // Title of the voucher
     
     @Lob
-    private String voucherDesctiption; // Description of the voucher
+    private String voucherDescription; // Description of the voucher
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date voucherExpiryDate; // Expiry date of the voucher
