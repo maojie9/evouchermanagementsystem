@@ -70,6 +70,15 @@ public class VoucherListController {
         return new ResponseEntity<>(retrieveVoucherLists, HttpStatus.OK);
     }
 
+    @GetMapping("/api/voucherList/retrieveVoucherDetails")
+    public ResponseEntity<VoucherList> retrieveActiveVoucherList(@RequestHeader("Authorization") String jwt, @RequestBody VoucherList voucherList) throws Exception{
+        Customer customer = customerService.findCustomerByJwt(jwt);
+        if(customer == null) {
+            throw new Exception("Only registered customer can access to the eStore");
+        }
+        VoucherList voucherListResponse = voucherListService.retrieveVoucherListById(voucherList.getId());
+        return new ResponseEntity<>(voucherListResponse, HttpStatus.OK);
+    }
 
 
 
