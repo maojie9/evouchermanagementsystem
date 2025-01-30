@@ -12,7 +12,7 @@ public interface VoucherListService {
     VoucherList updateVoucherList(Owner owner, VoucherList voucherList) throws Exception;
 
     List<VoucherList> retrieveVoucherListByOwner(Owner owner);
-    VoucherList removeVoucherList(VoucherList voucherList) throws Exception;
+    VoucherList removeVoucherList(VoucherList voucherList, Owner owner) throws Exception;
 
     List<VoucherList> retrieveActiveVoucherListForCustomer();
     VoucherList retrieveVoucherListById(UUID voucherListId);

@@ -51,7 +51,8 @@ public class VoucherListController {
 
     @DeleteMapping("/api/voucherList/removeVoucherList")
     public ResponseEntity<String> removeVoucherList(@RequestHeader("Authorization") String jwt, @RequestBody VoucherList voucherList) throws Exception{
-        voucherListService.removeVoucherList(voucherList);
+        Owner owner = ownerService.findOwnerByJwt(jwt);
+        voucherListService.removeVoucherList(voucherList, owner);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

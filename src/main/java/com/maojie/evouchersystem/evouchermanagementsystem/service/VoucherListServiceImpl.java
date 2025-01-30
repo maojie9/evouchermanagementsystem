@@ -106,15 +106,20 @@ public class VoucherListServiceImpl implements VoucherListService{
     }
 
     @Override
-    public VoucherList removeVoucherList(VoucherList voucherList) throws Exception {
+    public VoucherList removeVoucherList(VoucherList voucherList, Owner owner) throws Exception {
          Optional<VoucherList> isVoucherListExist = voucherListRepository.findById(voucherList.getId());
 
         if(isVoucherListExist == null || isVoucherListExist.isEmpty()) {
             throw new Exception("This voucher is not exist, unable to remove the voucher");
         }
-        
-        voucherList.setStatus(DBStatus.INACTIVE);
-        return voucherListRepository.save(voucherList);
+
+        // Make sure the original owner can remove the voucher
+        if(owner.getId().equals(isVoucherListExist.get().getOwner().getId())) {
+            isVoucherListExist.get().setStatus(DBStatus.INACTIVE);
+            return voucherListRepository.save(isVoucherListExist.get());
+        }
+
+        throw new Exception("This voucher is unauthorized to remove");
 
     }
 

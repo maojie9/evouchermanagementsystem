@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.maojie.evouchersystem.evouchermanagementsystem.domain.DBStatus;
 
@@ -53,7 +52,6 @@ public class VoucherList implements Serializable{
     private int voucherLimitPerCustomer; // How many voucher each customer at most can buy 
     private int voucherGiftLimitPerCustomer; // How many voucher each customer can give out
 
-    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private DBStatus status;
 
